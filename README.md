@@ -6,7 +6,7 @@ A script to pipe sarif to BitBucket reports
 
 Install:
 
-`npm i -g sarif-to-bitbucket`
+`npm i -g sarif-to-bb`
 
 BitBucket Configuration:
 
@@ -23,10 +23,10 @@ pipelines:
       - step:
           name: Run Sarif to BitBucket 
           script:
-            - npm i -g sarif-to-bitbucket
+            - npm i -g sarif-to-bb
             - npm i -g snyk
-            - snyk test --sarif | npx sarif-to-bitbucket --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
-            - snyk code test --sarif | npx sarif-to-bitbucket --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
+            - snyk test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
+            - snyk code test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
 ```
 
 ## Sample Snyk Open Source Report
