@@ -31,8 +31,8 @@ pipelines:
 
 ## Sample Snyk Open Source Report
 
-<img width="650" src="https://raw.githubusercontent.com/dylansnyk/snyk-to-bitbucket/46fe73cf3b603091775b4e1518c6e92a833c6102/assets/snyk-open-source-sample-report.png">
+<img width="650" src="https://raw.githubusercontent.com/dylansnyk/sarif-to-bitbucket/cacde4869575e3b67527670e247f677a7064a7f2/assets/snyk-open-source-sample-report.png">
 
 ## Sample Snyk Code Report
 
-<img width="650" src="https://raw.githubusercontent.com/dylansnyk/snyk-to-bitbucket/46fe73cf3b603091775b4e1518c6e92a833c6102/assets/snyk-code-sample-report.png">
+<img width="650" src="https://raw.githubusercontent.com/dylansnyk/sarif-to-bitbucket/cacde4869575e3b67527670e247f677a7064a7f2/assets/snyk-code-sample-report.png">
