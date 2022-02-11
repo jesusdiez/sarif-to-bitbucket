@@ -12,6 +12,7 @@ const BB_USER = argv['user']
 const BB_APP_PASSWORD = argv['password']
 const REPO = argv['repo']
 const COMMIT = argv['commit']
+const WORKSPACE = argv['workspace']
 
 const paramsAreValid = () => {
   if (BB_USER == null) {
@@ -31,6 +32,11 @@ const paramsAreValid = () => {
 
   if (COMMIT == null) {
     console.log('Error: specify commit')
+    return false
+  }
+
+  if (WORKSPACE == null) {
+    console.log('Error: specify workspace')
     return false
   }
 
@@ -107,7 +113,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   const scanType = getScanType(sarifResult);
 
   // 1. Delete Existing Report
-  await axios.delete(`${BB_API_URL}/${BB_USER}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
+  await axios.delete(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
     {
       auth: {
         username: BB_USER,
@@ -118,7 +124,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
 
   // 2. Create Report 
   await axios.put(
-    `${BB_API_URL}/${BB_USER}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
+    `${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
     {
       title: scanType['title'],
       details: `This repository contains ${scanType['count']} ${scanType['name']} vulnerabilities`,
@@ -137,7 +143,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   // 3. Upload Annotations (Vulnerabilities)
   const vulns = scanType.mapper(sarifResult)
 
-  await axios.post(`${BB_API_URL}/${BB_USER}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}/annotations`,
+  await axios.post(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}/annotations`,
     vulns,
     {
       auth: {

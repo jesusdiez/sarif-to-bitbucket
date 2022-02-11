@@ -25,8 +25,8 @@ pipelines:
           script:
             - npm i -g sarif-to-bb
             - npm i -g snyk
-            - snyk test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
-            - snyk code test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT
+            - snyk test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT --workspace $BITBUCKET_WORKSPACE
+            - snyk code test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT --workspace $BITBUCKET_WORKSPACE
 ```
 
 ## Sample Snyk Open Source Report
