@@ -112,6 +112,14 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   const sarifResult = JSON.parse(sarifRawOutput);
   const scanType = getScanType(sarifResult);
 
+  let vulns = scanType.mapper(sarifResult)
+  let details = `This repository contains ${scanType['count']} ${scanType['name']} vulnerabilities`
+
+  if (vulns.length > 100) {
+    vulns = vulns.slice(0, 100)
+    details = `${details} (first 100 vulnerabilities shown)`
+  }
+
   // 1. Delete Existing Report
   await axios.delete(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
     {
@@ -127,7 +135,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
     `${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
     {
       title: scanType['title'],
-      details: `This repository contains ${scanType['count']} ${scanType['name']} vulnerabilities`,
+      details: details,
       report_type: "SECURITY",
       reporter: "sarif-to-bitbucket",
       result: "PASSED"
@@ -141,8 +149,6 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   )
 
   // 3. Upload Annotations (Vulnerabilities)
-  const vulns = scanType.mapper(sarifResult)
-
   await axios.post(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}/annotations`,
     vulns,
     {
