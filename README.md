@@ -1,12 +1,12 @@
-# Sarif to BitBucket
+# Sarif to BitBucket - Trivy
 
-A script to pipe sarif to BitBucket reports
+A script to pipe sarif to BitBucket reports modified to support Trivy.
 
 ## Getting Started 
 
 Install:
 
-`npm i -g sarif-to-bb`
+`npm i -g sarif-to-bb-trivy`
 
 BitBucket Configuration:
 
@@ -23,16 +23,8 @@ pipelines:
       - step:
           name: Run Sarif to BitBucket 
           script:
-            - npm i -g sarif-to-bb
-            - npm i -g snyk
-            - snyk test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT --workspace $BITBUCKET_WORKSPACE
-            - snyk code test --sarif | npx sarif-to-bb --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT --workspace $BITBUCKET_WORKSPACE
+            - npm i -g sarif-to-bb-trivy
+            - wget https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.deb
+            - dpkg -i trivy_0.49.1_Linux-64bit.deb
+            - trivy repo $BITBUCKET_CLONE_DIR --format sarif | npx sarif-to-bb-trivy --user $BB_USER --password $BB_APP_PASSWORD --repo $BITBUCKET_REPO_SLUG --commit $BITBUCKET_COMMIT --workspace $BITBUCKET_WORKSPACE
 ```
-
-## Sample Snyk Open Source Report
-
-<img width="650" src="https://raw.githubusercontent.com/dylansnyk/sarif-to-bitbucket/cacde4869575e3b67527670e247f677a7064a7f2/assets/snyk-open-source-sample-report.png">
-
-## Sample Snyk Code Report
-
-<img width="650" src="https://raw.githubusercontent.com/dylansnyk/sarif-to-bitbucket/cacde4869575e3b67527670e247f677a7064a7f2/assets/snyk-code-sample-report.png">

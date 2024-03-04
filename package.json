@@ -1,14 +1,29 @@
 {
-  "name": "sarif-to-bb",
-  "version": "1.1.1",
+  "name": "sarif-to-bb-trivy",
+  "version": "1.1.2",
   "type": "module",
-  "bin": "index.js",
+  "bin": {
+    "sarif-to-bb-trivy": "index.js"
+  },
   "scripts": {
     "main": "node index.js"
   },
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "1.6.7",
     "minimist": "^1.2.6",
     "uuid": "^8.3.2"
-  }
+  },
+  "description": "A script to pipe sarif to BitBucket reports modified to support Trivy.",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ManaStarved/sarif-to-bitbucket-trivy.git"
+  },
+  "author": "austin_phx",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ManaStarved/sarif-to-bitbucket-trivy/issues"
+  },
+  "homepage": "https://github.com/ManaStarved/sarif-to-bitbucket-trivy#readme"
 }

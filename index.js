@@ -63,14 +63,28 @@ const getLine = (sarifResult) => {
 const getSummary = (sarifResult, rulesMap) => {
   const ruleId = sarifResult['ruleId']
   const rule = rulesMap[ruleId]
-
   if (rule['fullDescription'] != null) {
-    return rule['fullDescription']['text']
+    let fullText = rule['fullDescription']['text']
+    if (fullText != null && fullText.length >= 445) {
+      fullText = fullText.slice(0, 445-1) + '...'
+    }
+    return fullText
   }
 
   if (rule['shortDescription'] != null) {
     return rule['shortDescription']['text']
   }
+}
+
+const getDetails = (sarifResult) => {
+  let fullText = sarifResult
+  if (sarifResult == null) {
+    return "No details."
+  }
+  if (fullText.length >= 1995) {
+    fullText = fullText.slice(0, 1995-1) + '...'
+  }
+  return fullText
 }
 
 const mapSarif = (sarif) => {
@@ -91,7 +105,7 @@ const mapSarif = (sarif) => {
         path: getPath(result),
         line: getLine(result),
         summary: getSummary(result, rulesMap),
-        details: result['message']['text']
+        details: getDetails(result['message']['text'])
       }
     })
 }
@@ -130,7 +144,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
     }
   )
 
-  // 2. Create Report 
+  // 2. Create Report
   await axios.put(
     `${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
     {
