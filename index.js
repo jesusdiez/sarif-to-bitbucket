@@ -87,6 +87,8 @@ const getDetails = (sarifResult) => {
   return fullText
 }
 
+const severityList = []
+
 const mapSarif = (sarif) => {
   const severityMap = {
     'note': 'LOW',
@@ -98,14 +100,20 @@ const mapSarif = (sarif) => {
 
   return sarif['runs'][0]['results']
     .map(result => {
+      let severity = severityMap[result['level']]
+      let severityDetailText = result['message']['text']
+      if (severityDetailText.toLowerCase().includes('Severity: CRITICAL'.toLowerCase())) {
+        severity = 'CRITICAL'
+      }
+      severityList.push(severity)
       return {
         external_id: uuidv4(),
         annotation_type: "VULNERABILITY",
-        severity: severityMap[result['level']],
+        severity: severity,
         path: getPath(result),
         line: getLine(result),
         summary: getSummary(result, rulesMap),
-        details: getDetails(result['message']['text'])
+        details: getDetails(severityDetailText)
       }
     })
 }
@@ -126,8 +134,13 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   const sarifResult = JSON.parse(sarifRawOutput);
   const scanType = getScanType(sarifResult);
 
+  let passed = 'PASSED'
   let vulns = scanType.mapper(sarifResult)
   let details = `This repository contains ${scanType['count']} ${scanType['name']} vulnerabilities`
+
+  if (scanType['count'] > 0 && (severityList.includes("HIGH") || severityList.includes("CRITICAL"))) {
+    passed = 'FAILED'
+  }
 
   if (vulns.length > 100) {
     vulns = vulns.slice(0, 100)
@@ -152,7 +165,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
       details: details,
       report_type: "SECURITY",
       reporter: "sarif-to-bitbucket",
-      result: "PASSED"
+      result: passed
     },
     {
       auth: {
