@@ -16,13 +16,10 @@ const WORKSPACE = argv['workspace']
 
 const paramsAreValid = () => {
   if (BB_USER == null) {
-    console.log('Error: specify user')
-    return false
+    console.log('User not specified, using proxy call')
   }
-
   if (BB_APP_PASSWORD == null) {
-    console.log('Error: specify password')
-    return false
+    console.log('Password not specified, using proxy call')
   }
 
   if (REPO == null) {
@@ -147,14 +144,22 @@ const sarifToBitBucket = async (sarifRawOutput) => {
     details = `${details} (first 100 vulnerabilities shown)`
   }
 
-  // 1. Delete Existing Report
-  await axios.delete(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
-    {
-      auth: {
-        username: BB_USER,
-        password: BB_APP_PASSWORD
-      }
+  const authParams = (BB_USER !== null && BB_APP_PASSWORD !== null) ? {
+    auth: {
+      username: BB_USER,
+      password: BB_APP_PASSWORD
     }
+  } : {
+    proxy: {
+      host: 'http://host.docker.internal',
+      port: 29418
+    }
+  };
+  
+  // 1. Delete Existing Report
+  await axios.delete(
+    `${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
+    authParams
   )
 
   // 2. Create Report
@@ -167,23 +172,13 @@ const sarifToBitBucket = async (sarifRawOutput) => {
       reporter: "sarif-to-bitbucket",
       result: passed
     },
-    {
-      auth: {
-        username: BB_USER,
-        password: BB_APP_PASSWORD
-      }
-    }
+    authParams
   )
 
   // 3. Upload Annotations (Vulnerabilities)
   await axios.post(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}/annotations`,
     vulns,
-    {
-      auth: {
-        username: BB_USER,
-        password: BB_APP_PASSWORD
-      }
-    }
+    authParams
   )
 }
 
