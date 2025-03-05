@@ -19,7 +19,7 @@ const paramsAreValid = () => {
     console.log('User not specified, using proxy call')
   }
   if (BB_APP_PASSWORD == null) {
-    console.log('User not specified, using proxy call')
+    console.log('Password not specified, using proxy call')
   }
 
   if (REPO == null) {
@@ -144,7 +144,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
     details = `${details} (first 100 vulnerabilities shown)`
   }
 
-  const requestExtra = (BB_USER !== null && BB_APP_PASSWORD !== null) ? {
+  const authParams = (BB_USER !== null && BB_APP_PASSWORD !== null) ? {
     auth: {
       username: BB_USER,
       password: BB_APP_PASSWORD
@@ -159,7 +159,7 @@ const sarifToBitBucket = async (sarifRawOutput) => {
   // 1. Delete Existing Report
   await axios.delete(
     `${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}`,
-    requestExtra
+    authParams
   )
 
   // 2. Create Report
@@ -172,13 +172,13 @@ const sarifToBitBucket = async (sarifRawOutput) => {
       reporter: "sarif-to-bitbucket",
       result: passed
     },
-    requestExtra
+    authParams
   )
 
   // 3. Upload Annotations (Vulnerabilities)
   await axios.post(`${BB_API_URL}/${WORKSPACE}/${REPO}/commit/${COMMIT}/reports/${scanType['id']}/annotations`,
     vulns,
-    requestExtra
+    authParams
   )
 }
 
